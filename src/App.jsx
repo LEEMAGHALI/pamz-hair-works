@@ -1,6 +1,6 @@
 
 import {useEffect,useState} from 'react';
-import {Link,NavLink,Route,Routes,useNavigate} from 'react-router-dom';
+import {Link,NavLink,Route,Routes,useNavigate,useLocation} from 'react-router-dom';
 import {
   ArrowRight, Menu, X, ShoppingBag, MapPin, Phone,
   Mail, Clock, Instagram, Facebook, Eye, EyeOff
@@ -23,6 +23,8 @@ const fallbackProducts=[
 ];
 
 export default function App(){
+ const location=useLocation();
+ const isManagerLogin=location.pathname==='/manager-login';
  const [session,setSession]=useState(null),[profile,setProfile]=useState(null),[menu,setMenu]=useState(false);
  const [cart,setCart]=useState(()=>{try{return JSON.parse(localStorage.getItem('pamz-cart')||'[]')}catch{return[]}});
  useEffect(()=>{if(!supabase)return;supabase.auth.getSession().then(({data})=>setSession(data.session));const {data:sub}=supabase.auth.onAuthStateChange((_,s)=>setSession(s));return()=>sub.subscription.unsubscribe()},[]);
@@ -30,13 +32,14 @@ export default function App(){
  useEffect(()=>localStorage.setItem('pamz-cart',JSON.stringify(cart)),[cart]);
  const add=p=>setCart(old=>{const x=old.find(i=>i.id===p.id);return x?old.map(i=>i.id===p.id?{...i,quantity:i.quantity+1}:i):[...old,{...p,quantity:1}]});
  const logout=()=>supabase?.auth.signOut();
- return <div className="app"><div className="announcement">A little time for yourself. Beautiful hair, thoughtfully done. · Bolton, Lancashire</div>
+ return <div className="app">{!isManagerLogin&&<><div className="announcement">A little time for yourself. Beautiful hair, thoughtfully done. · Bolton, Lancashire</div>
  <header className="header"><Link to="/" className="brand-mark"><img src="/images/legacy/logo.jpg" alt="Pamz Hair Works logo"/><span>PAMZ <small>HAIR WORKS</small></span></Link><button className="menu-toggle" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation">{menu?<X/>:<Menu/>}</button>
- <nav className={menu?'nav open':'nav'}><NavLink to="/" onClick={()=>setMenu(false)}>Home</NavLink><a href="/#services" onClick={()=>setMenu(false)}>Services</a><a href="/#gallery" onClick={()=>setMenu(false)}>Gallery</a><a href="/#shop" onClick={()=>setMenu(false)}>Shop</a><a href="/#contact" onClick={()=>setMenu(false)}>Contact</a>{session?<><Link to="/account">My account</Link>{profile?.role==='manager'&&<Link to="/manager">Dashboard</Link>}<button className="plain" onClick={logout}>Sign out</button></>:<Link to="/login">Sign in</Link>}<Link className="nav-cta" to="/book">Book an appointment <ArrowRight size={15}/></Link><Link to="/cart" className="bag"><ShoppingBag size={18}/><span>{cart.reduce((n,x)=>n+x.quantity,0)}</span></Link></nav></header>
+ <nav className={menu?'nav open':'nav'}><NavLink to="/" onClick={()=>setMenu(false)}>Home</NavLink><a href="/#services" onClick={()=>setMenu(false)}>Services</a><a href="/#gallery" onClick={()=>setMenu(false)}>Gallery</a><a href="/#shop" onClick={()=>setMenu(false)}>Shop</a><a href="/#contact" onClick={()=>setMenu(false)}>Contact</a>{session?<><Link to="/account">My account</Link>{profile?.role==='manager'&&<Link to="/manager">Dashboard</Link>}<button className="plain" onClick={logout}>Sign out</button></>:<Link to="/login">Sign in</Link>}<Link className="nav-cta" to="/book">Book an appointment <ArrowRight size={15}/></Link><Link to="/cart" className="bag"><ShoppingBag size={18}/><span>{cart.reduce((n,x)=>n+x.quantity,0)}</span></Link></nav></header></>}
  
 <Routes>
   <Route path="/" element={<Home add={add} />} />
   <Route path="/login" element={<Auth />} />
+  <Route path="/manager-login" element={<ManagerLogin />} />
   <Route path="/register" element={<Auth register />} />
   <Route path="/reset-password" element={<ResetPassword />} />
   <Route path="/book" element={<Booking session={session} />} />
@@ -54,7 +57,7 @@ export default function App(){
   />
 </Routes>
 
- <footer className="footer"><div><Link to="/" className="brand-mark footer-brand"><img src="/images/legacy/logo.jpg" alt=""/><span>PAMZ <small>HAIR WORKS</small></span></Link><p>Professional hair, beauty and spa services in Bolton.</p><p>12 St Andrews Court, Shopping Arcade<br/>Bolton, Lancashire BL1 1LD</p></div><div className="foot-links"><a href="/#services">Services</a><a href="/#gallery">Gallery</a><a href="/#shop">Shop</a><Link to="/book">Book</Link><a href="/#contact">Contact</a></div><div className="footer-contact"><a href="tel:+447368420613">+44 7368 420613</a><a href="mailto:pamzhairworks@gmail.com">pamzhairworks@gmail.com</a><a href="https://www.instagram.com/pamzhairb" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.tiktok.com/@pamzhairworks" target="_blank" rel="noreferrer">TikTok</a></div><small className="copyright">© {new Date().getFullYear()} Pamz Hair Works. All rights reserved.</small></footer></div>
+ {!isManagerLogin&&<footer className="footer"><div><Link to="/" className="brand-mark footer-brand"><img src="/images/legacy/logo.jpg" alt=""/><span>PAMZ <small>HAIR WORKS</small></span></Link><p>Professional hair, beauty and spa services in Bolton.</p><p>12 St Andrews Court, Shopping Arcade<br/>Bolton, Lancashire BL1 1LD</p></div><div className="foot-links"><a href="/#services">Services</a><a href="/#gallery">Gallery</a><a href="/#shop">Shop</a><Link to="/book">Book</Link><a href="/#contact">Contact</a></div><div className="footer-contact"><a href="tel:+447368420613">+44 7368 420613</a><a href="mailto:pamzhairworks@gmail.com">pamzhairworks@gmail.com</a><a href="https://www.instagram.com/pamzhairb" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.tiktok.com/@pamzhairworks" target="_blank" rel="noreferrer">TikTok</a></div><small className="copyright">© {new Date().getFullYear()} Pamz Hair Works. All rights reserved.</small></footer>}</div>
 }
 
 function Home({add}){
@@ -300,6 +303,97 @@ function Auth({ register = false }) {
   );
 }
 
+
+function ManagerLogin() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
+  const nav = useNavigate();
+
+  async function submit(e) {
+    e.preventDefault();
+    setMsg('');
+
+    if (!supabase) {
+      setMsg('The login service is temporarily unavailable. Please contact the website administrator.');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      if (profile?.role !== 'manager') {
+        await supabase.auth.signOut();
+        throw new Error('This account does not have manager access. Please use an authorised manager account.');
+      }
+
+      nav('/manager', { replace: true });
+    } catch (error) {
+      setMsg(error.message || 'Unable to sign in. Please check your details and try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <main className="auth-page">
+      <div className="auth-card">
+        <p className="kicker">PAMZ HAIR WORKS · PRIVATE ACCESS</p>
+        <h1>Manager <em>sign in.</em></h1>
+        <p className="muted">Sign in with your authorised salon manager account to manage appointments, services and products.</p>
+        <form className="form" onSubmit={submit}>
+          <label>
+            Email address
+            <input
+              type="email"
+              required
+              autoComplete="username"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+          </label>
+          <label>
+            Password
+            <div className="password-field">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+              </button>
+            </div>
+          </label>
+          {msg && <p className="notice">{msg}</p>}
+          <button className="button full" disabled={busy}>
+            {busy ? 'Checking access...' : 'Sign in to manager dashboard'}
+          </button>
+        </form>
+        <p className="switch"><Link to="/login">Customer sign in</Link></p>
+      </div>
+    </main>
+  );
+}
 
 function ResetPassword() {
   const [password, setPassword] = useState('');
