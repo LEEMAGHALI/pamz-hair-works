@@ -1,38 +1,165 @@
-# Pamz Hair Works application
+# PAM'Z Hair Works
 
-## Install and run
-1. Extract this folder.
-2. Open it in VS Code.
-3. In the terminal, run `npm install`.
-4. Create `.env.local` in the project root using `.env.example` as a guide.
-5. Add your Supabase project URL and publishable key.
-6. Run `npm run dev`.
+### A modern salon website and management platform
 
-## Business information and media added from the previous Pamz website
-- Address: 12 St Andrews Court, Shopping Arcade, Bolton, Lancashire, BL1 1LD
-- Phone / WhatsApp: +44 7368 420613
-- Email: pamzhairworks@gmail.com
-- Opening hours: Monday–Saturday, 9:00am–5:00pm; Sunday closed
-- Instagram: https://www.instagram.com/phworkz
-- Facebook: https://www.facebook.com/share/14hhxfp5Pq5/?mibextid=wwXIfr
-- TikTok: https://www.tiktok.com/@pamzhairworks
-- Brand logo, salon interior photographs, reception photo, service imagery and Atomy product imagery have been copied into `public/images/`.
+PAM'Z Hair Works is a salon web application designed to improve the customer experience and simplify everyday salon operations.
 
-## Included
-- Responsive UK salon website in warm ivory, espresso, muted olive and soft rose
-- Services and product catalogues connected to Supabase (with temporary fallback demo content)
-- Customer registration and login
-- Appointment request form with a 30% deposit calculation
-- Customer appointment history
-- Local shopping bag
-- Basic manager view for appointments, products and services
+The platform brings together service discovery, customer accounts, appointment requests, product browsing and basic management functionality in one responsive application.
 
-## Important: development MVP, not production-ready
-- Appointment requests are not confirmed bookings. The form creates a pending request only.
-- The preferred time picker does not check live availability or prevent double-booking. Do not accept live public bookings until server-side slot locking and overlap protection are added.
-- Worldpay payment checkout, signed webhook verification, refunds and remaining-balance collection are not implemented.
-- Cart checkout, order creation, stock reservation and delivery pricing are not implemented.
-- WhatsApp Business Platform messages and approved templates are not implemented.
-- The fallback service names, prices and durations in `src/App.jsx` are development examples and must be confirmed by the salon before launch. Product cards currently show enquiry-only pricing until the manager adds confirmed product prices in Supabase.
-- Manager access must be assigned manually using `supabase/manager-setup.sql` after registration. Do not expose a service-role key in the browser.
-- Configure Supabase Auth email confirmation and redirect URLs before launch.
+**Live Website:** https://pamz-hair-works.vercel.app/
+
+---
+
+## Project Overview
+
+The application provides two main experiences:
+
+- **Customers:** Explore salon services and products, create accounts, submit appointment requests and view appointment history.
+- **Managers:** Access a management interface for viewing and managing appointments, products and services.
+
+## Features
+
+### Customer Experience
+- Responsive salon website.
+- Customer registration and authentication.
+- Service catalogue connected to Supabase.
+- Product catalogue.
+- Appointment request form.
+- 30% appointment deposit calculation.
+- Customer appointment history.
+- Shopping bag functionality.
+
+### Management
+- Dedicated manager login.
+- Appointment management interface.
+- Product management.
+- Service management.
+
+### Design
+- Warm ivory, espresso, muted olive and soft rose colour palette.
+- Responsive layouts for desktop and mobile.
+- Clean and modern salon-focused interface.
+
+---
+
+## Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| React | Frontend development |
+| Vite | Development and build tooling |
+| JavaScript | Application functionality |
+| CSS | Styling and responsive layouts |
+| Supabase | Authentication and database |
+| PostgreSQL | Database management |
+| Vercel | Deployment |
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js
+- npm
+- A Supabase project
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/LEEMAGHALI/pamz-hair-works.git
+   ```
+
+2. Navigate into the project:
+
+   ```bash
+   cd pamz-hair-works
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Create your local environment file using `.env.example` as a guide:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+5. Configure your Supabase project URL and publishable key using the variable names specified in `.env.example`.
+
+6. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Project Structure
+
+```text
+pamz-hair-works/
+├── public/
+│   └── images/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── ...
+├── supabase/
+│   └── manager-setup.sql
+├── .env.example
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+---
+
+## Current Development Status
+
+**Status: Development MVP**
+
+The application has working core functionality, but some features require further development before production use.
+
+Current limitations:
+
+- Appointment requests are pending requests, not automatically confirmed bookings.
+- Live availability checking and double-booking prevention are not yet implemented.
+- Worldpay payment checkout and payment webhook verification are not implemented.
+- Remaining-balance collection and refunds are not implemented.
+- Shopping bag checkout, order creation, stock reservation and delivery pricing are not implemented.
+- WhatsApp Business Platform messaging is not implemented.
+- Some fallback service information is demonstration content and requires confirmation from the salon.
+- Manager access requires manual assignment through the Supabase setup process.
+
+Production deployment requires appropriate testing, security configuration and completion of the outstanding functionality.
+
+---
+
+## Future Improvements
+
+- Real-time appointment availability.
+- Secure online payment integration.
+- Automated booking confirmations.
+- Complete order and inventory management.
+- WhatsApp Business integration.
+- Enhanced manager analytics.
+
+---
+
+## Developer
+
+**Halimatu Mohammed Gali**
+
+Software Developer | Frontend • Backend • Full-Stack Development
+
+- GitHub: [@LEEMAGHALI](https://github.com/LEEMAGHALI)
+- Instagram: [@halima.builds](https://www.instagram.com/halima._builds)
+
+---
+
+*Building practical digital solutions for real-world businesses.*
